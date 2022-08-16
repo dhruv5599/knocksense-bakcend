@@ -3,9 +3,9 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from users.models import User
-from explore.models import News, Category, Locality, City, Tag
+from explore.models import News, Tag
 
-from .serializers import NewsSerializer
+from .serializers import NewsSerializer, Tagerializer
 from utils.helperfunction import get_context
 
 
@@ -135,4 +135,58 @@ class NewsList(APIView):
         )
 
 
-
+class TagList(APIView):
+    
+    def get(self, request, pk=None):
+        if pk is not None:
+            tag = Tag.objects.filter(id=pk)
+            serializer = Tagerializer(tag , many=True)
+            
+            return get_context(
+                status= status.HTTP_200_OK,
+                success= True,
+                message= "you get perticular tag",
+                data = serializer.data
+            )
+        tag = Tag.objects.all()
+        serializer = Tagerializer(tag,many=True)
+        return get_context(
+                status= status.HTTP_200_OK,
+                success= True,
+                message= "you get tag",
+                data = serializer.data
+            )
+        
+    def post(self , request):
+        serializer = Tagerializer(data = request.data)
+        if serializer.is_valid():
+            check_tag =  Tag.objects.filter(tag = request.data['tag'])    
+            if check_tag.exists():
+                return get_context(
+                    status= status.HTTP_201_CREATED,
+                    success= True,
+                    message= "Allready have tag",
+                    data =  serializer.data
+                )
+            try:
+                serializer.save()
+                return get_context(
+                    status= status.HTTP_201_CREATED,
+                    success= True,
+                    message= "Created tag",
+                    data =  serializer.data
+                )
+            except Exception as e:
+                return get_context(
+                    status= status.HTTP_400_BAD_REQUEST,
+                    success= True,
+                    message= "Error", 
+                    data =  serializer.errors
+                )
+        else:
+            return get_context(
+                status= status.HTTP_404_NOT_FOUND,
+                success= False,
+                message=f"OOPS Something went wrong !! correct srializer",
+                data =  serializer.errors
+            )

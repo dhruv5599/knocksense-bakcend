@@ -15,10 +15,13 @@ class News(models.Model):
     author              = models.PositiveIntegerField() \
         # from user table (dhruv's id = 5)
     category            = models.PositiveIntegerField()  \
+        # amdin
         # from category table (sports =1 , it =-2)
     locality            = models.PositiveIntegerField()  \
+        # amdin
         # from locality table (new-mumbai = 1 , sahibagh = 2)
     city                = models.PositiveIntegerField()  \
+        # amdin
         # from city table (ahmedabad = 1 , lucknow = 2) 
     is_activate = models.BooleanField(default=True) 
     modified_date       = models.DateTimeField(auto_now=True)
